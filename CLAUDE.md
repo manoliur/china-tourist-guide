@@ -26,3 +26,10 @@
 
 16 разделов, см. `/root/TASK-china-concept.md`. Каждый раздел — отдельный JSON-файл в
 `src/content/`.
+
+## Сборка
+
+`src/content/*.json` — канонический источник (редактировать только здесь).
+`public/content/*.json` — копия для рантайм-fetch (Vite отдаёт `public/` как есть, `src/` собирает
+в бандл, поэтому для `fetch()` в браузере нужна копия в `public/`). После любой правки контента:
+`cp src/content/*.json public/content/` перед `npm run build`.

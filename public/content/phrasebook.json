@@ -1,0 +1,25 @@
+{
+  "section": "phrasebook",
+  "title": "Разговорник",
+  "icon": "🔤",
+  "entries": [
+    { "id": "phrase-01", "ru": "Помогите!", "zh": "救命！", "pinyin": "Jiùmìng!", "priority": true },
+    { "id": "phrase-02", "ru": "Мне нужен врач", "zh": "我需要医生", "pinyin": "Wǒ xūyào yīshēng", "priority": true },
+    { "id": "phrase-03", "ru": "Вызовите скорую", "zh": "请叫救护车", "pinyin": "Qǐng jiào jiùhùchē", "priority": true },
+    { "id": "phrase-04", "ru": "Вызовите полицию", "zh": "请叫警察", "pinyin": "Qǐng jiào jǐngchá", "priority": true },
+    { "id": "phrase-05", "ru": "Сколько это стоит?", "zh": "这个多少钱？", "pinyin": "Zhège duōshǎo qián?", "priority": true },
+    { "id": "phrase-06", "ru": "Я не понимаю", "zh": "我听不懂", "pinyin": "Wǒ tīng bù dǒng", "priority": true },
+    { "id": "phrase-07", "ru": "Я не говорю по-китайски", "zh": "我不会说中文", "pinyin": "Wǒ bú huì shuō Zhōngwén", "priority": false },
+    { "id": "phrase-08", "ru": "Я турист из России", "zh": "我是来自俄罗斯的游客", "pinyin": "Wǒ shì láizì Èluósī de yóukè", "priority": false },
+    { "id": "phrase-09", "ru": "У меня аллергия на ___", "zh": "我对___过敏", "pinyin": "Wǒ duì ___ guòmǐn", "priority": true },
+    { "id": "phrase-10", "ru": "Где туалет?", "zh": "厕所在哪里？", "pinyin": "Cèsuǒ zài nǎlǐ?", "priority": false },
+    { "id": "phrase-11", "ru": "Спасибо", "zh": "谢谢", "pinyin": "Xièxiè", "priority": false },
+    { "id": "phrase-12", "ru": "Пожалуйста (в ответ на спасибо)", "zh": "不客气", "pinyin": "Bù kèqì", "priority": false },
+    { "id": "phrase-13", "ru": "Да / согласен", "zh": "对", "pinyin": "Duì", "priority": false },
+    { "id": "phrase-14", "ru": "Нет / не согласен", "zh": "不对", "pinyin": "Bú duì", "priority": false },
+    { "id": "phrase-15", "ru": "Помогите связаться с консульством России", "zh": "请帮我联系俄罗斯领事馆", "pinyin": "Qǐng bāng wǒ liánxì Èluósī lǐngshìguǎn", "priority": true },
+    { "id": "phrase-16", "ru": "Мне плохо / я потерял сознание (для окружающих)", "zh": "我不舒服", "pinyin": "Wǒ bù shūfu", "priority": true },
+    { "id": "phrase-17", "ru": "Пожалуйста, отвезите меня сюда (показать адрес на экране)", "zh": "请带我去这里", "pinyin": "Qǐng dài wǒ qù zhèlǐ", "priority": false },
+    { "id": "phrase-18", "ru": "У меня украли/я потерял документы", "zh": "我的证件被偷了／丢了", "pinyin": "Wǒ de zhèngjiàn bèi tōu le / diū le", "priority": false }
+  ]
+}

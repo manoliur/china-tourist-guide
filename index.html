@@ -1,13 +1,117 @@
 <!doctype html>
-<html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>china-guide</title>
-  </head>
-  <body>
-    <div id="app"></div>
-    <script type="module" src="/src/main.js"></script>
-  </body>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <title>Справочник туриста в Китае</title>
+  <meta name="description" content="Офлайн-справочник для туриста из России в Китае: экстренная помощь, законы, Alipay, транспорт, безвиз, разговорник. Работает без интернета." />
+  <meta name="theme-color" content="#0b0e14" />
+  <link rel="icon" href="./favicon.png" type="image/png" />
+  <link rel="apple-touch-icon" href="./icon-192.png" />
+  <link rel="manifest" href="./manifest.webmanifest" />
+  <script type="module" src="/src/main.js"></script>
+</head>
+<body>
+  <header class="app-header">
+    <div class="brand">
+      <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+        <path d="M12 2 L20 6 V13 C20 18 16.5 21 12 22 C7.5 21 4 18 4 13 V6 Z" stroke="#e8734a" stroke-width="1.6" stroke-linejoin="round"/>
+        <path d="M12 8v8M8 12h8" stroke="#eceae6" stroke-width="1.8" stroke-linecap="round"/>
+      </svg>
+      Справочник туриста
+    </div>
+    <span class="status" id="net-status">офлайн-режим</span>
+  </header>
+
+  <main>
+
+    <section id="view-home" class="view active">
+      <div class="disclaimer">
+        <strong>Это справочник, составленный по официальным источникам.</strong> Не является медицинской или юридической консультацией. В опасной ситуации звоните <span class="sos-line">120 (скорая) / 110 (полиция) / 12308 (МИД КНР, для справки)</span> — и см. вкладку SOS для номеров консульства РФ.
+      </div>
+      <p class="section-title">Разделы</p>
+      <div class="section-list" id="section-list"></div>
+      <button class="back-btn" data-view-link="about" style="margin-top:8px">ℹ️ О справочнике и источниках</button>
+    </section>
+
+    <section id="view-section" class="view">
+      <button class="back-btn" data-back="home">← Все разделы</button>
+      <p class="section-title" id="section-detail-title"></p>
+      <div class="entry-list" id="section-detail-list"></div>
+    </section>
+
+    <section id="view-search" class="view">
+      <div class="search-box">
+        <span aria-hidden="true">🔍</span>
+        <input id="search-input" type="search" placeholder="Искать по всем записям…" autocomplete="off" />
+      </div>
+      <div class="entry-list" id="search-results"></div>
+    </section>
+
+    <section id="view-sos" class="view">
+      <p class="section-title">Экстренные номера Китая</p>
+      <div class="sos-grid">
+        <a class="sos-btn" href="tel:120"><span class="info"><span class="label">🚑 Скорая помощь</span><span class="sub">медицинская экстренная помощь</span></span><span class="number">120</span></a>
+        <a class="sos-btn" href="tel:110"><span class="info"><span class="label">🚓 Полиция</span><span class="sub">преступление, угроза, кража</span></span><span class="number">110</span></a>
+        <a class="sos-btn" href="tel:119"><span class="info"><span class="label">🚒 Пожарная служба</span><span class="sub">пожар, обрушение</span></span><span class="number">119</span></a>
+      </div>
+      <p class="section-title">Консульство России в Китае</p>
+      <div class="sos-grid">
+        <a class="sos-btn" href="tel:+8618518664933"><span class="info"><span class="label">🇷🇺 Посольство РФ в Пекине — экстренный</span><span class="sub">угроза жизни, здоровью, безопасности</span></span><span class="number">+86 185 1866 4933</span></a>
+        <a class="sos-btn" href="tel:+861065321991"><span class="info"><span class="label">🇷🇺 Посольство РФ в Пекине — консульский</span><span class="sub">рабочие дни 15:00–18:00</span></span><span class="number">+86 10 6532 1991</span></a>
+        <a class="sos-btn" href="tel:+862163248383"><span class="info"><span class="label">🇷🇺 Генконсульство РФ в Шанхае</span><span class="sub">пн/ср/пт</span></span><span class="number">+86 21 6324 8383</span></a>
+        <a class="sos-btn" href="tel:+862085185001"><span class="info"><span class="label">🇷🇺 Генконсульство РФ в Гуанчжоу</span><span class="sub">пн–пт</span></span><span class="number">+86 20 8518 5001</span></a>
+        <a class="sos-btn" href="tel:+862423223927"><span class="info"><span class="label">🇷🇺 Генконсульство РФ в Шэньяне</span><span class="sub"></span></span><span class="number">+86 24 2322 3927</span></a>
+      </div>
+      <div class="disclaimer" style="margin-top:16px">Номера консульств проверены через официальные сайты mid.ru (17.09.2026), но требуют финальной сверки перед публикацией — см. запись «Консульская защита» в разделе справочника.</div>
+    </section>
+
+    <section id="view-calc" class="view">
+      <p class="section-title">Калькулятор ¥ ↔ ₽</p>
+      <div class="calc-box">
+        <div class="calc-row">
+          <span class="cur">¥</span>
+          <input id="calc-cny" type="number" inputmode="decimal" placeholder="0" />
+        </div>
+        <div class="calc-row">
+          <span class="cur">₽</span>
+          <input id="calc-rub" type="number" inputmode="decimal" placeholder="0" />
+        </div>
+        <div class="calc-rate-row">
+          <span>Курс: 1 ¥ =</span>
+          <input id="calc-rate" type="number" inputmode="decimal" step="0.01" />
+          <span>₽</span>
+        </div>
+        <div class="calc-updated" id="calc-updated"></div>
+      </div>
+      <div class="disclaimer" style="margin:16px">Курс не обновляется автоматически из сети (справочник офлайн) — введите актуальный курс перед поездкой, он сохранится на телефоне и будет использоваться дальше без интернета.</div>
+    </section>
+
+    <section id="view-phrases" class="view">
+      <p class="section-title">Разговорник</p>
+      <div class="phrase-list" id="phrase-list"></div>
+    </section>
+
+    <section id="view-about" class="view">
+      <p class="section-title">О справочнике</p>
+      <div class="about-block">
+        <h4>Источники</h4>
+        <p>Часть записей переведена и адаптирована из книги <strong>«How To Live Better»</strong> (github.com/eternity4719/HowToLiveBetter, лицензия Unlicense). Остальное написано заново на основе официальных источников (законы КНР, официальные сайты госорганов и компаний) — у каждой записи указаны источники и дата проверки.</p>
+        <h4>Ограничения</h4>
+        <p>Это справочник со ссылками на источники, а не медицинская или юридическая консультация. Правила и цифры могут измениться — там, где факт не подтверждён официальным первоисточником напрямую, стоит пометка «требует проверки». Не полагайтесь на записи с такой пометкой как на 100% точные без самостоятельной проверки.</p>
+        <h4>Офлайн-режим</h4>
+        <p>Всё содержимое справочника загружено на устройство при первом открытии и продолжает работать без интернета.</p>
+      </div>
+    </section>
+
+  </main>
+
+  <nav class="bottom-nav">
+    <button data-view="home" class="active"><span class="icon">📋</span>Справочник</button>
+    <button data-view="search"><span class="icon">🔍</span>Поиск</button>
+    <button data-view="sos"><span class="icon">🆘</span>SOS</button>
+    <button data-view="calc"><span class="icon">⚖️</span>Курс</button>
+    <button data-view="phrases"><span class="icon">🔤</span>Фразы</button>
+  </nav>
+</body>
 </html>
