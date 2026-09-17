@@ -5,95 +5,94 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
   <title>Справочник туриста в Китае</title>
   <meta name="description" content="Офлайн-справочник для туриста из России в Китае: экстренная помощь, законы, Alipay, транспорт, безвиз, разговорник. Работает без интернета." />
-  <meta name="theme-color" content="#0b0e14" />
+  <meta name="theme-color" content="#0a0a0d" />
   <link rel="icon" href="./favicon.png" type="image/png" />
   <link rel="apple-touch-icon" href="./icon-192.png" />
   <link rel="manifest" href="./manifest.webmanifest" />
+  <link rel="preload" href="/fonts/manrope-cyrillic-wght-normal.woff2" as="font" type="font/woff2" crossorigin />
   <script type="module" src="/src/main.js"></script>
 </head>
 <body>
   <header class="app-header">
     <div class="brand">
-      <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
-        <path d="M12 2 L20 6 V13 C20 18 16.5 21 12 22 C7.5 21 4 18 4 13 V6 Z" stroke="#e8734a" stroke-width="1.6" stroke-linejoin="round"/>
-        <path d="M12 8v8M8 12h8" stroke="#eceae6" stroke-width="1.8" stroke-linecap="round"/>
-      </svg>
-      Справочник туриста
+      <svg class="icon"><use href="#ic-shield"/></svg>
+      <span class="name">Справочник туриста</span>
     </div>
-    <span class="status" id="net-status">офлайн-режим</span>
+    <span class="status-pill offline" id="net-status"><span class="dot"></span><span class="label">офлайн</span></span>
   </header>
 
   <main>
 
     <section id="view-home" class="view active">
       <div class="disclaimer">
-        <strong>Это справочник, составленный по официальным источникам.</strong> Не является медицинской или юридической консультацией. В опасной ситуации звоните <span class="sos-line">120 (скорая) / 110 (полиция) / 12308 (МИД КНР, для справки)</span> — и см. вкладку SOS для номеров консульства РФ.
+        <svg class="icon"><use href="#ic-info"/></svg>
+        <div><strong>Это справочник, составленный по официальным источникам.</strong> Не является медицинской или юридической консультацией. В опасной ситуации звоните <span class="sos-inline">120 / 110 / 12308</span> — и см. вкладку SOS для номеров консульства РФ.</div>
       </div>
-      <p class="section-title">Разделы</p>
-      <div class="section-list" id="section-list"></div>
-      <button class="back-btn" data-view-link="about" style="margin-top:8px">ℹ️ О справочнике и источниках</button>
+      <p class="eyebrow">Разделы</p>
+      <div class="section-list" id="section-list">
+        <div class="skeleton"></div><div class="skeleton"></div><div class="skeleton"></div><div class="skeleton"></div>
+      </div>
+      <button class="back-btn" data-view-link="about" style="margin-top:var(--sp-4)">
+        <svg class="icon"><use href="#ic-info"/></svg>О справочнике и источниках
+      </button>
     </section>
 
     <section id="view-section" class="view">
-      <button class="back-btn" data-back="home">← Все разделы</button>
-      <p class="section-title" id="section-detail-title"></p>
-      <div class="entry-list" id="section-detail-list"></div>
+      <button class="back-btn" data-back="home"><svg class="icon"><use href="#ic-chevron-left"/></svg>Все разделы</button>
+      <div class="page-hero">
+        <p class="eyebrow-small" id="section-detail-count"></p>
+        <h1 id="section-detail-title"></h1>
+      </div>
+      <div class="entry-list" id="section-detail-list" style="margin-top:var(--sp-4)"></div>
     </section>
 
     <section id="view-search" class="view">
+      <div class="page-hero"><h1>Поиск</h1></div>
       <div class="search-box">
-        <span aria-hidden="true">🔍</span>
-        <input id="search-input" type="search" placeholder="Искать по всем записям…" autocomplete="off" />
+        <svg class="icon"><use href="#ic-search"/></svg>
+        <input id="search-input" type="search" placeholder="Например «дрон», «alipay», «виза»…" autocomplete="off" />
       </div>
       <div class="entry-list" id="search-results"></div>
     </section>
 
     <section id="view-sos" class="view">
-      <p class="section-title">Экстренные номера Китая</p>
+      <div class="page-hero"><h1>SOS</h1><p class="sub">тап по номеру — звонок</p></div>
+      <p class="eyebrow">Экстренные номера Китая</p>
       <div class="sos-grid">
-        <a class="sos-btn" href="tel:120"><span class="info"><span class="label">🚑 Скорая помощь</span><span class="sub">медицинская экстренная помощь</span></span><span class="number">120</span></a>
-        <a class="sos-btn" href="tel:110"><span class="info"><span class="label">🚓 Полиция</span><span class="sub">преступление, угроза, кража</span></span><span class="number">110</span></a>
-        <a class="sos-btn" href="tel:119"><span class="info"><span class="label">🚒 Пожарная служба</span><span class="sub">пожар, обрушение</span></span><span class="number">119</span></a>
+        <a class="sos-btn critical" href="tel:120"><div class="icon-wrap"><svg class="icon"><use href="#ic-cross-medical"/></svg></div><div class="info"><div class="label">Скорая помощь</div><div class="sub">медицинская экстренная помощь</div></div><div class="number">120</div></a>
+        <a class="sos-btn critical" href="tel:110"><div class="icon-wrap"><svg class="icon"><use href="#ic-shield"/></svg></div><div class="info"><div class="label">Полиция</div><div class="sub">преступление, угроза, кража</div></div><div class="number">110</div></a>
+        <a class="sos-btn critical" href="tel:119"><div class="icon-wrap"><svg class="icon"><use href="#ic-siren"/></svg></div><div class="info"><div class="label">Пожарная служба</div><div class="sub">пожар, обрушение</div></div><div class="number">119</div></a>
       </div>
-      <p class="section-title">Консульство России в Китае</p>
+      <p class="eyebrow">Консульство России в Китае</p>
       <div class="sos-grid">
-        <a class="sos-btn" href="tel:+8618518664933"><span class="info"><span class="label">🇷🇺 Посольство РФ в Пекине — экстренный</span><span class="sub">угроза жизни, здоровью, безопасности</span></span><span class="number">+86 185 1866 4933</span></a>
-        <a class="sos-btn" href="tel:+861065321991"><span class="info"><span class="label">🇷🇺 Посольство РФ в Пекине — консульский</span><span class="sub">рабочие дни 15:00–18:00</span></span><span class="number">+86 10 6532 1991</span></a>
-        <a class="sos-btn" href="tel:+862163248383"><span class="info"><span class="label">🇷🇺 Генконсульство РФ в Шанхае</span><span class="sub">пн/ср/пт</span></span><span class="number">+86 21 6324 8383</span></a>
-        <a class="sos-btn" href="tel:+862085185001"><span class="info"><span class="label">🇷🇺 Генконсульство РФ в Гуанчжоу</span><span class="sub">пн–пт</span></span><span class="number">+86 20 8518 5001</span></a>
-        <a class="sos-btn" href="tel:+862423223927"><span class="info"><span class="label">🇷🇺 Генконсульство РФ в Шэньяне</span><span class="sub"></span></span><span class="number">+86 24 2322 3927</span></a>
+        <a class="sos-btn consular" href="tel:+8618518664933"><div class="icon-wrap"><svg class="icon"><use href="#ic-phone-call"/></svg></div><div class="info"><div class="label">Посольство РФ — экстренный</div><div class="sub">угроза жизни, здоровью, безопасности</div></div><div class="number">+86 185&nbsp;1866&nbsp;4933</div></a>
+        <a class="sos-btn consular" href="tel:+861065321991"><div class="icon-wrap"><svg class="icon"><use href="#ic-embassy"/></svg></div><div class="info"><div class="label">Посольство РФ — консульский</div><div class="sub">рабочие дни 15:00–18:00</div></div><div class="number">+86 10&nbsp;6532&nbsp;1991</div></a>
+        <a class="sos-btn consular" href="tel:+862163248383"><div class="icon-wrap"><svg class="icon"><use href="#ic-embassy"/></svg></div><div class="info"><div class="label">Генконсульство в Шанхае</div><div class="sub">пн / ср / пт</div></div><div class="number">+86 21&nbsp;6324&nbsp;8383</div></a>
+        <a class="sos-btn consular" href="tel:+862085185001"><div class="icon-wrap"><svg class="icon"><use href="#ic-embassy"/></svg></div><div class="info"><div class="label">Генконсульство в Гуанчжоу</div><div class="sub">пн–пт</div></div><div class="number">+86 20&nbsp;8518&nbsp;5001</div></a>
+        <a class="sos-btn consular" href="tel:+862423223927"><div class="icon-wrap"><svg class="icon"><use href="#ic-embassy"/></svg></div><div class="info"><div class="label">Генконсульство в Шэньяне</div><div class="sub"></div></div><div class="number">+86 24&nbsp;2322&nbsp;3927</div></a>
       </div>
-      <div class="disclaimer" style="margin-top:16px">Номера консульств проверены через официальные сайты mid.ru (17.09.2026), но требуют финальной сверки перед публикацией — см. запись «Консульская защита» в разделе справочника.</div>
+      <div class="caption-note">Номера сверены через официальные консульские сайты (mid.ru), 17.09.2026 — требуют финальной проверки перед поездкой, см. запись «Консульская защита» в разделе справочника.</div>
     </section>
 
     <section id="view-calc" class="view">
-      <p class="section-title">Калькулятор ¥ ↔ ₽</p>
+      <div class="page-hero"><h1>Курс</h1></div>
       <div class="calc-box">
-        <div class="calc-row">
-          <span class="cur">¥</span>
-          <input id="calc-cny" type="number" inputmode="decimal" placeholder="0" />
-        </div>
-        <div class="calc-row">
-          <span class="cur">₽</span>
-          <input id="calc-rub" type="number" inputmode="decimal" placeholder="0" />
-        </div>
-        <div class="calc-rate-row">
-          <span>Курс: 1 ¥ =</span>
-          <input id="calc-rate" type="number" inputmode="decimal" step="0.01" />
-          <span>₽</span>
-        </div>
+        <div class="calc-row"><span class="cur">¥</span><input id="calc-cny" type="number" inputmode="decimal" placeholder="0" /></div>
+        <div class="calc-row"><span class="cur">₽</span><input id="calc-rub" type="number" inputmode="decimal" placeholder="0" /></div>
+        <div class="calc-rate-row"><span>Курс: 1 ¥ =</span><input id="calc-rate" type="number" inputmode="decimal" step="0.01" /><span>₽</span></div>
         <div class="calc-updated" id="calc-updated"></div>
       </div>
-      <div class="disclaimer" style="margin:16px">Курс не обновляется автоматически из сети (справочник офлайн) — введите актуальный курс перед поездкой, он сохранится на телефоне и будет использоваться дальше без интернета.</div>
+      <div class="caption-note">Курс не обновляется автоматически из сети (справочник офлайн) — введите актуальный курс перед поездкой, он сохранится на телефоне и будет использоваться дальше без интернета.</div>
     </section>
 
     <section id="view-phrases" class="view">
-      <p class="section-title">Разговорник</p>
+      <div class="page-hero"><h1>Фразы</h1><p class="sub">разговорник с пиньинем</p></div>
       <div class="phrase-list" id="phrase-list"></div>
     </section>
 
     <section id="view-about" class="view">
-      <p class="section-title">О справочнике</p>
+      <button class="back-btn" data-back="home"><svg class="icon"><use href="#ic-chevron-left"/></svg>Все разделы</button>
+      <div class="page-hero"><h1>О справочнике</h1></div>
       <div class="about-block">
         <h4>Источники</h4>
         <p>Часть записей переведена и адаптирована из книги <strong>«How To Live Better»</strong> (github.com/eternity4719/HowToLiveBetter, лицензия Unlicense). Остальное написано заново на основе официальных источников (законы КНР, официальные сайты госорганов и компаний) — у каждой записи указаны источники и дата проверки.</p>
@@ -107,11 +106,11 @@
   </main>
 
   <nav class="bottom-nav">
-    <button data-view="home" class="active"><span class="icon">📋</span>Справочник</button>
-    <button data-view="search"><span class="icon">🔍</span>Поиск</button>
-    <button data-view="sos"><span class="icon">🆘</span>SOS</button>
-    <button data-view="calc"><span class="icon">⚖️</span>Курс</button>
-    <button data-view="phrases"><span class="icon">🔤</span>Фразы</button>
+    <button data-view="home" class="active"><svg class="icon"><use href="#ic-list"/></svg>Справочник</button>
+    <button data-view="search"><svg class="icon"><use href="#ic-search"/></svg>Поиск</button>
+    <button data-view="sos"><svg class="icon"><use href="#ic-siren"/></svg>SOS</button>
+    <button data-view="calc"><svg class="icon"><use href="#ic-exchange"/></svg>Курс</button>
+    <button data-view="phrases"><svg class="icon"><use href="#ic-chat"/></svg>Фразы</button>
   </nav>
 </body>
 </html>

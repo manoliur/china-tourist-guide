@@ -1,4 +1,9 @@
 import "./style.css";
+import { ICON_SPRITE } from "./icons.js";
+
+// Спрайт иконок — вставляем синхронно первым делом, до какого-либо рендера,
+// чтобы <use href="#ic-…"> в статическом index.html сразу резолвился без FOUC.
+document.body.insertAdjacentHTML("afterbegin", ICON_SPRITE);
 
 const CONTENT_FILES = [
   "emergency", "law", "doctor", "consulate", "phone", "nightlife",
@@ -6,8 +11,27 @@ const CONTENT_FILES = [
   "food", "power", "contact", "money",
 ];
 
-let sections = []; // [{key,title,icon,entries:[...]}]
-let allEntries = []; // flattened with sectionKey/sectionTitle/sectionIcon
+const SECTION_ICON = {
+  emergency: "ic-siren",
+  law: "ic-scale",
+  doctor: "ic-cross-medical",
+  consulate: "ic-embassy",
+  phone: "ic-smartphone",
+  nightlife: "ic-glass",
+  payments: "ic-card",
+  sim: "ic-wifi",
+  transport: "ic-train",
+  hotels: "ic-bed",
+  visa: "ic-passport",
+  customs: "ic-suitcase",
+  food: "ic-bowl",
+  power: "ic-plug",
+  contact: "ic-chat",
+  money: "ic-banknote",
+};
+
+let sections = [];
+let allEntries = [];
 let phrasebook = [];
 
 async function loadContent() {
@@ -21,12 +45,12 @@ async function loadContent() {
   );
   sections = results
     .filter(Boolean)
-    .map(({ key, data }) => ({ key, title: data.title, icon: data.icon, entries: data.entries }));
+    .map(({ key, data }) => ({ key, title: data.title, entries: data.entries }));
 
   allEntries = [];
   for (const s of sections) {
     for (const e of s.entries) {
-      allEntries.push({ ...e, sectionKey: s.key, sectionTitle: s.title, sectionIcon: s.icon });
+      allEntries.push({ ...e, sectionKey: s.key, sectionTitle: s.title });
     }
   }
 
@@ -39,7 +63,6 @@ async function loadContent() {
   }
 }
 
-const GRADE_LABEL = { A: "A", B: "B", C: "C" };
 const ORIGIN_LABEL = { translated: "переведено", adapted: "адаптировано", original: "написано заново" };
 
 function fmtCost(cost) {
@@ -51,6 +74,10 @@ function fmtCost(cost) {
   return parts.join(" · ");
 }
 
+function iconTag(id, cls = "icon") {
+  return `<svg class="${cls}"><use href="#${id}"/></svg>`;
+}
+
 function entryCardHTML(entry) {
   const grade = entry.evidence_grade ? `<span class="tag grade-${entry.evidence_grade}">证据 ${entry.evidence_grade}</span>` : "";
   const origin = entry.origin ? `<span class="tag origin">${ORIGIN_LABEL[entry.origin] || entry.origin}</span>` : "";
@@ -58,7 +85,7 @@ function entryCardHTML(entry) {
     .map((s) => `<li><a href="${s.url}" target="_blank" rel="noopener">${escapeHtml(s.title)}</a></li>`)
     .join("");
   const requiresCheck = entry.requires_check
-    ? `<div class="requires-check">⚠️ Требует проверки: ${escapeHtml(entry.requires_check)}</div>`
+    ? `<div class="requires-check">${iconTag("ic-warning")}<span>Требует проверки: ${escapeHtml(entry.requires_check)}</span></div>`
     : "";
   return `
     <article class="entry-card">
@@ -75,10 +102,7 @@ function entryCardHTML(entry) {
 }
 
 function escapeHtml(str) {
-  return String(str)
-    .replaceAll("&", "&amp;")
-    .replaceAll("<", "&lt;")
-    .replaceAll(">", "&gt;");
+  return String(str).replaceAll("&", "&amp;").replaceAll("<", "&lt;").replaceAll(">", "&gt;");
 }
 
 // --- навигация ---
@@ -97,13 +121,13 @@ function renderHome() {
   list.innerHTML = sections
     .map(
       (s) => `
-      <button class="section-row" data-open-section="${s.key}">
-        <span class="emoji">${s.icon}</span>
+      <button class="row" data-open-section="${s.key}">
+        <div class="icon-wrap">${iconTag(SECTION_ICON[s.key] || "ic-list")}</div>
         <span class="meta">
-          <div class="name">${escapeHtml(s.title)}</div>
-          <div class="count">${s.entries.length} ${plural(s.entries.length)}</div>
+          <div class="title">${escapeHtml(s.title)}</div>
+          <div class="sub">${s.entries.length} ${plural(s.entries.length)}</div>
         </span>
-        <span class="arrow">→</span>
+        ${iconTag("ic-chevron-right", "icon chev")}
       </button>`
     )
     .join("");
@@ -119,7 +143,8 @@ function plural(n) {
 function openSection(key) {
   const s = sections.find((s) => s.key === key);
   if (!s) return;
-  document.getElementById("section-detail-title").textContent = `${s.icon} ${s.title}`;
+  document.getElementById("section-detail-count").textContent = `${s.entries.length} ${plural(s.entries.length)}`;
+  document.getElementById("section-detail-title").textContent = s.title;
   document.getElementById("section-detail-list").innerHTML = s.entries.map(entryCardHTML).join("");
   showView("section");
 }
@@ -142,14 +167,14 @@ function runSearch(query) {
     return;
   }
   resultsEl.innerHTML = found
-    .map((e) => `<div class="section-title" style="margin:16px 0 4px">${e.sectionIcon} ${escapeHtml(e.sectionTitle)}</div>${entryCardHTML(e)}`)
+    .map((e) => `<div class="eyebrow" style="margin:var(--sp-4) 0 4px">${escapeHtml(e.sectionTitle)}</div>${entryCardHTML(e)}`)
     .join("");
 }
 
 // --- калькулятор ---
 
 const RATE_KEY = "china-guide-rate";
-const DEFAULT_RATE = 11.5; // ориентировочно, пользователь должен обновить перед поездкой
+const DEFAULT_RATE = 11.5;
 
 function initCalculator() {
   const cnyInput = document.getElementById("calc-cny");
@@ -165,15 +190,13 @@ function initCalculator() {
   }
   const rate = saved?.rate || DEFAULT_RATE;
   rateInput.value = rate;
-  updatedEl.textContent = saved?.date
-    ? `Курс сохранён: ${saved.date}`
-    : "Курс по умолчанию — обновите перед поездкой";
+  updatedEl.textContent = saved?.date ? `Курс сохранён: ${saved.date}` : "Курс по умолчанию — обновите перед поездкой";
 
   function saveRate(r) {
     try {
       localStorage.setItem(RATE_KEY, JSON.stringify({ rate: r, date: new Date().toLocaleDateString("ru-RU") }));
     } catch {
-      /* приватный режим / хранилище недоступно — калькулятор всё равно работает в рамках сессии */
+      /* приватный режим — калькулятор всё равно работает в рамках сессии */
     }
     updatedEl.textContent = `Курс сохранён: ${new Date().toLocaleDateString("ru-RU")}`;
   }
@@ -213,13 +236,13 @@ function renderPhrases() {
     .join("");
 }
 
-// --- сеть (просто индикатор — контент и так весь офлайн) ---
+// --- индикатор сети ---
 
 function updateNetStatus() {
   const el = document.getElementById("net-status");
   const online = navigator.onLine;
-  el.textContent = online ? "онлайн" : "офлайн-режим";
-  el.className = `status ${online ? "online" : "offline"}`;
+  el.querySelector(".label").textContent = online ? "онлайн" : "офлайн";
+  el.className = `status-pill ${online ? "online" : "offline"}`;
 }
 
 // --- инициализация ---

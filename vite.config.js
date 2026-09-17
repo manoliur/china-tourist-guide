@@ -10,13 +10,16 @@ export default defineConfig({
   plugins: [
     VitePWA({
       registerType: "autoUpdate",
-      includeAssets: ["favicon.png", "icon-192.png", "icon-512.png", "icon-512-maskable.png"],
+      includeAssets: [
+        "favicon.png", "icon-192.png", "icon-512.png", "icon-512-maskable.png",
+        "fonts/*.woff2",
+      ],
       manifest: {
         name: "Справочник туриста в Китае",
         short_name: "Китай-справочник",
         description: "Офлайн-справочник: экстренная помощь, законы, Alipay, транспорт, безвиз — для туриста из России в Китае.",
-        theme_color: "#0b0e14",
-        background_color: "#0b0e14",
+        theme_color: "#0a0a0d",
+        background_color: "#0a0a0d",
         display: "standalone",
         start_url: ".",
         scope: ".",
@@ -30,7 +33,7 @@ export default defineConfig({
       workbox: {
         // Весь контент (JSON) и вся оболочка приложения — в precache,
         // это и есть требование "работает полностью офлайн".
-        globPatterns: ["**/*.{js,css,html,json,png,svg,ico}"],
+        globPatterns: ["**/*.{js,css,html,json,png,svg,ico,woff2}"],
         maximumFileSizeToCacheInBytes: 4 * 1024 * 1024,
       },
     }),

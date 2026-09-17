@@ -22,11 +22,11 @@ async function main() {
   });
   console.log("Service worker state:", swState);
 
-  const sectionCount = await page.locator(".section-row").count();
+  const sectionCount = await page.locator(".row").count();
   console.log("Разделов на главной:", sectionCount);
 
   // Открыть раздел "Экстренная помощь" (первый)
-  await page.locator(".section-row").first().click();
+  await page.locator(".row").first().click();
   await page.waitForTimeout(300);
   const entryCount = await page.locator("#section-detail-list .entry-card").count();
   console.log("Записей в первом разделе (эмерджэнси):", entryCount);
@@ -73,10 +73,10 @@ async function main() {
   await page.reload({ waitUntil: "load", timeout: 15000 });
   await page.waitForTimeout(1000);
 
-  const offlineSectionCount = await page.locator(".section-row").count();
+  const offlineSectionCount = await page.locator(".row").count();
   console.log("[OFFLINE] Разделов на главной после reload офлайн:", offlineSectionCount);
 
-  await page.locator(".section-row").nth(1).click(); // раздел law
+  await page.locator(".row").nth(1).click(); // раздел law
   await page.waitForTimeout(300);
   const offlineEntryCount = await page.locator("#section-detail-list .entry-card").count();
   console.log("[OFFLINE] Записей во 2-м разделе:", offlineEntryCount);
