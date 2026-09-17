@@ -85,6 +85,33 @@
       <div class="caption-note">Курс не обновляется автоматически из сети (справочник офлайн) — введите актуальный курс перед поездкой, он сохранится на телефоне и будет использоваться дальше без интернета.</div>
     </section>
 
+    <section id="view-metro" class="view">
+      <div class="page-hero"><h1>Метро</h1><p class="sub">Пекин · работает офлайн</p></div>
+
+      <div class="metro-picker">
+        <div class="metro-field">
+          <label for="metro-from-input">Откуда</label>
+          <input id="metro-from-input" type="text" placeholder="Станция…" autocomplete="off" />
+          <div class="metro-suggest" id="metro-from-suggest"></div>
+        </div>
+        <button class="metro-swap" id="metro-swap" type="button" aria-label="Поменять местами">
+          <svg class="icon"><use href="#ic-exchange"/></svg>
+        </button>
+        <div class="metro-field">
+          <label for="metro-to-input">Куда</label>
+          <input id="metro-to-input" type="text" placeholder="Станция…" autocomplete="off" />
+          <div class="metro-suggest" id="metro-to-suggest"></div>
+        </div>
+      </div>
+
+      <button class="metro-build-btn" id="metro-build-btn" type="button">Построить маршрут</button>
+
+      <p class="eyebrow" id="metro-quick-label" style="display:none">Быстрые направления</p>
+      <div class="metro-quick" id="metro-quick"></div>
+
+      <div id="metro-result"></div>
+    </section>
+
     <section id="view-phrases" class="view">
       <div class="page-hero"><h1>Фразы</h1><p class="sub">тап на ▶ — произношение, на ⤢ — показать экран собеседнику</p></div>
       <div class="phrase-list" id="phrase-list"></div>
@@ -104,6 +131,8 @@
         <p>Часть записей переведена и адаптирована из книги <strong>«How To Live Better»</strong> (github.com/eternity4719/HowToLiveBetter, лицензия Unlicense). Остальное написано заново на основе официальных источников (законы КНР, официальные сайты госорганов и компаний) — у каждой записи указаны источники и дата проверки.</p>
         <h4>Ограничения</h4>
         <p>Это справочник со ссылками на источники, а не медицинская или юридическая консультация. Правила и цифры могут измениться — там, где факт не подтверждён официальным первоисточником напрямую, стоит пометка «требует проверки». Не полагайтесь на записи с такой пометкой как на 100% точные без самостоятельной проверки.</p>
+        <h4>Данные метро Пекина</h4>
+        <p>Схема и маршрутизация — <a href="https://github.com/Mick235711/Beijing-Subway-Tools" target="_blank" rel="noopener">Mick235711/Beijing-Subway-Tools</a> (лицензия MIT), данные с официального сайта Пекинского метро. Русские названия станций — <a href="https://ru.wikipedia.org/wiki/Список_станций_Пекинского_метрополитена" target="_blank" rel="noopener">Википедия, «Список станций Пекинского метрополитена»</a> (CC BY-SA); подтверждены для 334 из 425 станций (78%) — для новых линий (2020–2024) русских названий пока нет, показаны английские и иероглифы.</p>
         <h4>Офлайн-режим</h4>
         <p>Всё содержимое справочника загружено на устройство при первом открытии и продолжает работать без интернета.</p>
       </div>
@@ -117,6 +146,7 @@
     <button data-view="sos"><svg class="icon"><use href="#ic-siren"/></svg>SOS</button>
     <button data-view="calc"><svg class="icon"><use href="#ic-exchange"/></svg>Курс</button>
     <button data-view="phrases"><svg class="icon"><use href="#ic-chat"/></svg>Фразы</button>
+    <button data-view="metro"><svg class="icon"><use href="#ic-train"/></svg>Метро</button>
   </nav>
 </body>
 </html>

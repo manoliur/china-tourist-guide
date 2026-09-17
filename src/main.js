@@ -282,6 +282,174 @@ function openFullscreenPhrase(id) {
   showView("fullscreen-phrase");
 }
 
+// --- метро (Пекин) ---
+// Модуль src/metro.js грузится лениво при первом открытии вкладки «Метро» —
+// не при старте приложения (см. ensureMetroLoaded).
+
+let metro = null;
+let metroLoadingPromise = null;
+
+async function ensureMetroLoaded() {
+  if (metro) return metro;
+  const btn = document.getElementById("metro-build-btn");
+  if (!metroLoadingPromise) {
+    btn.textContent = "Загрузка карты метро…";
+    btn.disabled = true;
+    metroLoadingPromise = import("./metro.js").then(async (mod) => {
+      await mod.loadNetwork();
+      metro = mod;
+      return mod;
+    });
+  }
+  await metroLoadingPromise;
+  btn.textContent = "Построить маршрут";
+  btn.disabled = false;
+  return metro;
+}
+
+function stationDisplay(sid) {
+  const net = metro.getNet();
+  const st = net.stations[sid];
+  const text = st.name_ru || st.name_en || st.name;
+  return { text, hz: st.name, honest: !st.name_ru };
+}
+
+function wireMetroSuggest(inputId, suggestId) {
+  const input = document.getElementById(inputId);
+  const box = document.getElementById(suggestId);
+  input.addEventListener("input", async () => {
+    await ensureMetroLoaded();
+    input.dataset.stationId = "";
+    const q = input.value.trim();
+    if (!q) {
+      box.classList.remove("open");
+      box.innerHTML = "";
+      return;
+    }
+    const hits = metro.searchStations(q, 8);
+    if (!hits.length) {
+      box.classList.remove("open");
+      box.innerHTML = "";
+      return;
+    }
+    box.innerHTML = hits
+      .map((sid) => {
+        const d = stationDisplay(sid);
+        return `<button type="button" data-sid="${sid}">${escapeHtml(d.text)}<span class="hz">${escapeHtml(d.hz)}</span></button>`;
+      })
+      .join("");
+    box.classList.add("open");
+  });
+  box.addEventListener("click", (e) => {
+    const btn = e.target.closest("button[data-sid]");
+    if (!btn) return;
+    const sid = btn.dataset.sid;
+    const d = stationDisplay(sid);
+    input.value = `${d.text} ${d.hz}`;
+    input.dataset.stationId = sid;
+    box.classList.remove("open");
+    box.innerHTML = "";
+  });
+  input.addEventListener("blur", () => {
+    setTimeout(() => box.classList.remove("open"), 150);
+  });
+}
+
+function fmtKm(m) {
+  return (m / 1000).toFixed(1);
+}
+
+function renderMetroRoute(srcId, dstId) {
+  const resultEl = document.getElementById("metro-result");
+  const r = metro.route(srcId, dstId);
+  if (!r) {
+    resultEl.innerHTML = `<div class="metro-error">Маршрут между этими станциями не найден.</div>`;
+    return;
+  }
+  let totalM = 0;
+  const linesUsed = r.segments.map((s) => s.line);
+  const segHtml = r.segments
+    .map((seg, i) => {
+      totalM += seg.dist_m;
+      const line = metro.lineById(seg.line);
+      const st = seg.stations;
+      const fromD = stationDisplay(st[0]);
+      const toD = stationDisplay(st[st.length - 1]);
+      const transferHtml =
+        i > 0 ? `<div class="metro-transfer">${iconTag("ic-exchange")}Пересадка ≈4 мин</div>` : "";
+      const honest =
+        fromD.honest || toD.honest
+          ? `<div class="metro-name-honest">рус. название не подтверждено для этой станции — показан английский вариант</div>`
+          : "";
+      return `
+        ${transferHtml}
+        <div class="metro-segment">
+          <div class="metro-segment-head">
+            <span class="metro-line-dot" style="background:${line?.color || "#888"}"></span>
+            <span class="metro-line-name">${escapeHtml(line ? metro.lineDisplayName(line) : seg.line)} <span class="metro-line-hz">${escapeHtml(line?.name || "")}</span></span>
+          </div>
+          <div class="metro-segment-route">${escapeHtml(fromD.text)} ${escapeHtml(fromD.hz)} → ${escapeHtml(toD.text)} ${escapeHtml(toD.hz)}</div>
+          <div class="metro-segment-meta">остановок: ${st.length - 1}${seg.dist_m ? ` · ${fmtKm(seg.dist_m)} км` : ""}</div>
+          ${honest}
+        </div>`;
+    })
+    .join("");
+
+  const fare = metro.fareForDistance(totalM, linesUsed);
+
+  resultEl.innerHTML = `
+    <div class="metro-route">
+      <div class="metro-summary">
+        <div class="metro-summary-item"><span class="value">~${Math.round(r.total_min)}</span><span class="unit">мин</span></div>
+        <div class="metro-summary-item"><span class="value">${fmtKm(totalM)}</span><span class="unit">км</span></div>
+        <div class="metro-summary-item"><span class="value">${fare ? "¥" + fare : "—"}</span><span class="unit">цена</span></div>
+      </div>
+      ${segHtml}
+    </div>`;
+}
+
+// Быстрые направления из брифа. Не все запрошенные точки есть в данных
+// (нет "Пекин Северный", линии на Великую стену и станции "Ябаолу" в этом
+// датасете Beijing-Subway-Tools) — показываем только то, что реально
+// подтверждено, остальное честно отмечено как отсутствующее в отчёте.
+const METRO_QUICK_DIRECTIONS = [
+  { label: "Аэропорт Столичный (Т3)", sid: "st-3号航站楼" },
+  { label: "Аэропорт Дасин", sid: "st-大兴机场" },
+  { label: "Пекинский вокзал", sid: "st-北京站" },
+  { label: "Южный вокзал", sid: "st-北京南站" },
+  { label: "Западный вокзал", sid: "st-北京西站" },
+  { label: "Запретный город", sid: "st-天安门东" },
+  { label: "Храм Неба", sid: "st-天坛东门" },
+  { label: "Летний дворец", sid: "st-颐和园西门" },
+  { label: "Храм Ламы (Юнхэгун)", sid: "st-雍和宫" },
+];
+
+function renderMetroQuick() {
+  const box = document.getElementById("metro-quick");
+  document.getElementById("metro-quick-label").style.display = "";
+  box.innerHTML = METRO_QUICK_DIRECTIONS.map(
+    (q) => `<button type="button" data-quick-sid="${q.sid}">${escapeHtml(q.label)}</button>`
+  ).join("");
+}
+
+async function buildMetroRoute() {
+  await ensureMetroLoaded();
+  const fromInput = document.getElementById("metro-from-input");
+  const toInput = document.getElementById("metro-to-input");
+  const resultEl = document.getElementById("metro-result");
+  const srcId = fromInput.dataset.stationId || metro.findStation(fromInput.value);
+  const dstId = toInput.dataset.stationId || metro.findStation(toInput.value);
+  if (!srcId) {
+    resultEl.innerHTML = `<div class="metro-error">Не найдена станция отправления «${escapeHtml(fromInput.value)}» — выберите станцию из подсказок.</div>`;
+    return;
+  }
+  if (!dstId) {
+    resultEl.innerHTML = `<div class="metro-error">Не найдена станция назначения «${escapeHtml(toInput.value)}» — выберите станцию из подсказок.</div>`;
+    return;
+  }
+  renderMetroRoute(srcId, dstId);
+}
+
 // --- индикатор сети ---
 
 function updateNetStatus() {
@@ -302,7 +470,10 @@ async function init() {
   updateNetStatus();
 
   document.querySelectorAll(".bottom-nav button[data-view]").forEach((btn) => {
-    btn.addEventListener("click", () => showView(btn.dataset.view));
+    btn.addEventListener("click", () => {
+      showView(btn.dataset.view);
+      if (btn.dataset.view === "metro") ensureMetroLoaded();
+    });
   });
   document.querySelectorAll("[data-view-link]").forEach((btn) => {
     btn.addEventListener("click", () => showView(btn.dataset.viewLink));
@@ -329,6 +500,37 @@ async function init() {
 
   window.addEventListener("online", updateNetStatus);
   window.addEventListener("offline", updateNetStatus);
+
+  wireMetroSuggest("metro-from-input", "metro-from-suggest");
+  wireMetroSuggest("metro-to-input", "metro-to-suggest");
+  document.getElementById("metro-build-btn").addEventListener("click", buildMetroRoute);
+  document.getElementById("metro-swap").addEventListener("click", () => {
+    const fromInput = document.getElementById("metro-from-input");
+    const toInput = document.getElementById("metro-to-input");
+    const fromVal = fromInput.value, fromId = fromInput.dataset.stationId || "";
+    fromInput.value = toInput.value;
+    fromInput.dataset.stationId = toInput.dataset.stationId || "";
+    toInput.value = fromVal;
+    toInput.dataset.stationId = fromId;
+  });
+
+  renderMetroQuick();
+  document.getElementById("metro-quick").addEventListener("click", async (e) => {
+    const btn = e.target.closest("[data-quick-sid]");
+    if (!btn) return;
+    await ensureMetroLoaded();
+    const sid = btn.dataset.quickSid;
+    const toInput = document.getElementById("metro-to-input");
+    const d = stationDisplay(sid);
+    toInput.value = `${d.text} ${d.hz}`;
+    toInput.dataset.stationId = sid;
+    const fromInput = document.getElementById("metro-from-input");
+    if (fromInput.dataset.stationId) {
+      renderMetroRoute(fromInput.dataset.stationId, sid);
+    } else {
+      fromInput.focus();
+    }
+  });
 }
 
 init();
