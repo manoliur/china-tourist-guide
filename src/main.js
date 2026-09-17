@@ -221,19 +221,65 @@ function initCalculator() {
 
 // --- разговорник ---
 
+let currentAudio = null;
+let currentAudioBtn = null;
+
 function renderPhrases() {
   const list = document.getElementById("phrase-list");
-  const sorted = [...phrasebook].sort((a, b) => (b.priority ? 1 : 0) - (a.priority ? 1 : 0));
-  list.innerHTML = sorted
-    .map(
-      (p) => `
+  let lastCategory = null;
+  const html = [];
+  for (const p of phrasebook) {
+    if (p.category !== lastCategory) {
+      html.push(`<div class="phrase-category">${escapeHtml(p.category)}</div>`);
+      lastCategory = p.category;
+    }
+    html.push(`
       <div class="phrase-card ${p.priority ? "priority" : ""}">
-        <div class="phrase-ru">${escapeHtml(p.ru)}</div>
-        <div class="phrase-zh">${escapeHtml(p.zh)}</div>
-        <div class="phrase-pinyin">${escapeHtml(p.pinyin)}</div>
-      </div>`
-    )
-    .join("");
+        <div class="phrase-text">
+          <div class="phrase-ru">${escapeHtml(p.ru)}</div>
+          <div class="phrase-zh">${escapeHtml(p.zh)}</div>
+          <div class="phrase-pinyin">${escapeHtml(p.pinyin)}</div>
+        </div>
+        <div class="phrase-actions">
+          <button class="phrase-btn" data-play="${p.id}" aria-label="Прослушать">${iconTag("ic-play")}</button>
+          <button class="phrase-btn" data-expand="${p.id}" aria-label="Показать на весь экран">${iconTag("ic-expand")}</button>
+        </div>
+      </div>`);
+  }
+  list.innerHTML = html.join("");
+}
+
+function playPhrase(id, btn) {
+  // Повторный тап по уже играющей фразе — остановить.
+  if (currentAudio && currentAudioBtn === btn && !currentAudio.paused) {
+    currentAudio.pause();
+    return;
+  }
+  if (currentAudio) {
+    currentAudio.pause();
+    currentAudioBtn?.classList.remove("playing");
+  }
+  const audio = new Audio(`./audio/${id}.mp3`);
+  currentAudio = audio;
+  currentAudioBtn = btn;
+  btn.classList.add("playing");
+  btn.innerHTML = iconTag("ic-pause");
+  audio.addEventListener("ended", () => resetPlayButton(btn));
+  audio.addEventListener("error", () => resetPlayButton(btn));
+  audio.play().catch(() => resetPlayButton(btn));
+}
+
+function resetPlayButton(btn) {
+  btn.classList.remove("playing");
+  btn.innerHTML = iconTag("ic-play");
+}
+
+function openFullscreenPhrase(id) {
+  const p = phrasebook.find((p) => p.id === id);
+  if (!p) return;
+  document.getElementById("fs-zh").textContent = p.zh;
+  document.getElementById("fs-pinyin").textContent = p.pinyin;
+  showView("fullscreen-phrase");
 }
 
 // --- индикатор сети ---
@@ -269,6 +315,17 @@ async function init() {
     if (btn) openSection(btn.dataset.openSection);
   });
   document.getElementById("search-input").addEventListener("input", (e) => runSearch(e.target.value));
+
+  document.getElementById("phrase-list").addEventListener("click", (e) => {
+    const playBtn = e.target.closest("[data-play]");
+    if (playBtn) return playPhrase(playBtn.dataset.play, playBtn);
+    const expandBtn = e.target.closest("[data-expand]");
+    if (expandBtn) return openFullscreenPhrase(expandBtn.dataset.expand);
+  });
+  document.getElementById("fs-close").addEventListener("click", () => {
+    currentAudio?.pause();
+    showView("phrases");
+  });
 
   window.addEventListener("online", updateNetStatus);
   window.addEventListener("offline", updateNetStatus);

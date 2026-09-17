@@ -12,7 +12,7 @@ export default defineConfig({
       registerType: "autoUpdate",
       includeAssets: [
         "favicon.png", "icon-192.png", "icon-512.png", "icon-512-maskable.png",
-        "fonts/*.woff2",
+        "fonts/*.woff2", "audio/*.mp3",
       ],
       manifest: {
         name: "Справочник туриста в Китае",
@@ -33,7 +33,7 @@ export default defineConfig({
       workbox: {
         // Весь контент (JSON) и вся оболочка приложения — в precache,
         // это и есть требование "работает полностью офлайн".
-        globPatterns: ["**/*.{js,css,html,json,png,svg,ico,woff2}"],
+        globPatterns: ["**/*.{js,css,html,json,png,svg,ico,woff2,mp3}"],
         maximumFileSizeToCacheInBytes: 4 * 1024 * 1024,
       },
     }),
