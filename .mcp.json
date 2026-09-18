@@ -1,0 +1,13 @@
+{
+  "mcpServers": {
+    "playwright": {
+      "command": "node",
+      "args": [
+        "/root/.nvm/versions/node/v26.4.0/lib/node_modules/@playwright/mcp/cli.js",
+        "--no-sandbox",
+        "--isolated"
+      ],
+      "description": "Браузер для Клода: навигация, клики, скриншоты, консоль. Даёт обратную связь — проверить свою работу визуально. --no-sandbox нужен т.к. работаем под root."
+    }
+  }
+}
