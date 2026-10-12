@@ -1,0 +1,18 @@
+- generic [active] [ref=e1]:
+  - banner [ref=e2]:
+    - generic [ref=e3]: Справочник туриста
+    - generic [ref=e7]: офлайн
+  - main [ref=e10]:
+    - generic [ref=e11]:
+      - generic [ref=e15]:
+        - strong [ref=e16]: Это справочник, составленный по официальным источникам.
+        - text: Не является медицинской или юридической консультацией. В опасной ситуации звоните 120 / 110 / 12308 — и см. вкладку SOS для номеров консульства РФ.
+      - paragraph [ref=e17]: Разделы
+      - button "О справочнике и источниках" [ref=e23] [cursor=pointer]
+  - navigation [ref=e26]:
+    - button "Справочник" [ref=e27]
+    - button "Поиск" [ref=e30]
+    - button "SOS" [ref=e33]
+    - button "Курс" [ref=e36]
+    - button "Фразы" [ref=e39]
+    - button "Метро" [ref=e42]
